@@ -21,7 +21,8 @@ static NSString *LNProgressKey = @"progress";
             LNLoadingLayer *loadingLayer = (LNLoadingLayer *)layer;
             self.progressLineWidth = loadingLayer.progressLineWidth;
             self.loadingColor = loadingLayer.loadingColor;
-            self.progress = loadingLayer.progress;
+            //无需添加，super会自动copy
+            //self.progress = loadingLayer.progress;
         }
     }
     return self;
@@ -36,8 +37,8 @@ static NSString *LNProgressKey = @"progress";
 - (id<CAAction>)actionForKey:(NSString *)event {
     if ([event isEqualToString:LNProgressKey]) {
         CABasicAnimation *actionAnimation = [CABasicAnimation animationWithKeyPath:LNProgressKey];
-        actionAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-        actionAnimation.fromValue = @(self.progress);
+        actionAnimation.timingFunction = [[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+                                          ] actionAnimation.fromValue = @(self.progress);
         return actionAnimation;
     }
     return [super actionForKey:event];
@@ -47,9 +48,13 @@ static NSString *LNProgressKey = @"progress";
     if (self.progress < 0) return;
     if (self.progress > 200) return;
     CGColorRef color = self.loadingColor;
+    BOOL releaseColorNeeded = NO;
     if (color == nil) {
         const CGFloat components[] = {1.000000,0.000000,0.000000,1.000000};
-        color = CGColorCreate(CGColorSpaceCreateDeviceRGB(), components);
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+        color = CGColorCreate(colorSpace, components);
+        CGColorSpaceRelease(colorSpace);
+        releaseColorNeeded = YES;
     }
     CGFloat lineWidth = self.progressLineWidth;
     if (lineWidth <= 0) {
@@ -75,6 +80,10 @@ static NSString *LNProgressKey = @"progress";
         CGContextAddArc(ctx, center.x, center.y, radius - lineWidth/2.f,-M_PI_2, -M_PI_2 - (M_PI * 2 * (1 - relativeProgress / 100)), 1);
     }
     CGContextDrawPath(ctx, kCGPathStroke);
+    if (releaseColorNeeded) {
+        CGColorRelease(color);
+    }
+    
 }
 
 
