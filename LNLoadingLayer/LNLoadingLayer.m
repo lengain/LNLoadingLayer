@@ -37,8 +37,8 @@ static NSString *LNProgressKey = @"progress";
 - (id<CAAction>)actionForKey:(NSString *)event {
     if ([event isEqualToString:LNProgressKey]) {
         CABasicAnimation *actionAnimation = [CABasicAnimation animationWithKeyPath:LNProgressKey];
-        actionAnimation.timingFunction = [[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-                                          ] actionAnimation.fromValue = @(self.progress);
+        actionAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+        actionAnimation.fromValue = @(self.progress);
         return actionAnimation;
     }
     return [super actionForKey:event];
